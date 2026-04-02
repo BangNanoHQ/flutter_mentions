@@ -7,9 +7,10 @@ class AnnotationEditingController extends TextEditingController {
   String? _pattern;
 
   // Generate the Regex pattern for matching all the suggestions in one.
+  // Sort keys by length (longest first) to ensure longer mentions are matched before shorter ones
   AnnotationEditingController(this._mapping)
       : _pattern = _mapping.keys.isNotEmpty
-            ? "(${_mapping.keys.map((key) => RegExp.escape(key)).join('|')})"
+            ? "(${(_mapping.keys.toList()..sort((a, b) => b.length.compareTo(a.length))).map((key) => RegExp.escape(key)).join('|')})"
             : null;
 
   /// Can be used to get the markup from the controller directly.
@@ -51,7 +52,8 @@ class AnnotationEditingController extends TextEditingController {
   set mapping(Map<String, Annotation> _mapping) {
     this._mapping = _mapping;
 
-    _pattern = "(${_mapping.keys.map((key) => RegExp.escape(key)).join('|')})";
+    // Sort keys by length (longest first) to ensure longer mentions are matched before shorter ones
+    _pattern = "(${(_mapping.keys.toList()..sort((a, b) => b.length.compareTo(a.length))).map((key) => RegExp.escape(key)).join('|')})";
   }
 
   @override

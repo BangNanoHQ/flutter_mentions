@@ -428,13 +428,43 @@ class FlutterMentionsState extends State<FlutterMentions> {
                     suggestionBuilder: list.suggestionBuilder,
                     suggestionListDecoration: widget.suggestionListDecoration,
                     data: list.data.where((element) {
-                      final ele = element['display'].toLowerCase();
+                      final username = (element['display'] ?? '').toString().toLowerCase();
+                      final fullName = (element['full_name'] ?? '').toString().toLowerCase();
                       final str = _selectedMention!.str
                           .toLowerCase()
                           .replaceAll(RegExp(_pattern), '');
 
-                      return ele == str ? false : ele.contains(str);
-                    }).toList(),
+                      // Filter: show items where username OR full name contains the search string
+                      return username.contains(str) || fullName.contains(str);
+                    }).toList()
+                      ..sort((a, b) {
+                        final aDisplay = (a['display'] ?? '').toString().toLowerCase();
+                        final bDisplay = (b['display'] ?? '').toString().toLowerCase();
+                        final aFullName = (a['full_name'] ?? '').toString().toLowerCase();
+                        final bFullName = (b['full_name'] ?? '').toString().toLowerCase();
+                        final str = _selectedMention!.str
+                            .toLowerCase()
+                            .replaceAll(RegExp(_pattern), '');
+                        
+                        // Prioritize exact username matches first (case-insensitive)
+                        if (aDisplay == str && bDisplay != str) return -1;
+                        if (bDisplay == str && aDisplay != str) return 1;
+                        
+                        // Then prioritize usernames that start with the search string
+                        final aUsernameStarts = aDisplay.startsWith(str);
+                        final bUsernameStarts = bDisplay.startsWith(str);
+                        if (aUsernameStarts && !bUsernameStarts) return -1;
+                        if (!aUsernameStarts && bUsernameStarts) return 1;
+                        
+                        // Then prioritize full names that start with the search string
+                        final aNameStarts = aFullName.startsWith(str);
+                        final bNameStarts = bFullName.startsWith(str);
+                        if (aNameStarts && !bNameStarts) return -1;
+                        if (!aNameStarts && bNameStarts) return 1;
+                        
+                        // Finally sort by username length (shorter first)
+                        return aDisplay.length.compareTo(bDisplay.length);
+                      }),
                     onTap: (value) {
                       addMention(value, list);
                       showSuggestions.value = false;

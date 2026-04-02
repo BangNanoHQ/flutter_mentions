@@ -34,6 +34,7 @@ class OptionList extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (context, index) {
                 return GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     onTap(data[index]);
                   },
