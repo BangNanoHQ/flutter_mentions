@@ -50,6 +50,7 @@ class FlutterMentions extends StatefulWidget {
     this.appendSpaceOnAdd = true,
     this.hideSuggestionList = false,
     this.onSuggestionVisibleChanged,
+    this.suggestionListHeader,
   }) : super(key: key);
 
   final bool hideSuggestionList;
@@ -94,6 +95,9 @@ class FlutterMentions extends StatefulWidget {
 
   /// Decoration for the Suggestion list.
   final BoxDecoration? suggestionListDecoration;
+
+  /// Optional header widget displayed above the suggestion list.
+  final Widget? suggestionListHeader;
 
   /// Focus node for controlling the focus of the Input.
   final FocusNode? focusNode;
@@ -427,6 +431,7 @@ class FlutterMentionsState extends State<FlutterMentions> {
                     suggestionListHeight: widget.suggestionListHeight,
                     suggestionBuilder: list.suggestionBuilder,
                     suggestionListDecoration: widget.suggestionListDecoration,
+                    suggestionListHeader: widget.suggestionListHeader,
                     data: list.data.where((element) {
                       final username = (element['display'] ?? '').toString().toLowerCase();
                       final fullName = (element['full_name'] ?? '').toString().toLowerCase();
